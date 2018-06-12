@@ -1,20 +1,43 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
+let pathsToClean = [
+    'dist',
+]
 module.exports = {
-    entry: './src/app.js',
+    entry: {
+        "app.bundle": './src/app.js',
+        // 这行是新增的。
+        "contact": './src/contact.js'
+    },
     output: {
         path: __dirname + '/dist',
-        filename: 'app.bundle.js'
+        filename: '[name].[chunkhash].js'
     },
-    plugins: [new HtmlWebpackPlugin({
+    plugins: [    
+        new HtmlWebpackPlugin({
+        title:'a title',
         template: './src/index.html',
         filename: 'index.html',
         minify: {
-            collapseWhitespace: true,
+          collapseWhitespace: true,
         },
         hash: true,
-    }),
+        // 这行是新增的。
+        excludeChunks: ['contact']
+      }),
+      new HtmlWebpackPlugin({
+        template: './src/contact.html',
+        filename: 'contact.html',
+        minify: {
+          collapseWhitespace: true,
+        },
+        hash: true,
+        // 这行是新增的。
+        chunks: ['contact']
+      }),
+        new CleanWebpackPlugin(pathsToClean),
         new ExtractTextPlugin('style.css'),
     ],
     module: {
